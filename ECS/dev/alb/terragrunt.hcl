@@ -6,12 +6,24 @@ terraform {
   source = "../../modules//alb"
 }
 
-dependencies {
-  paths = [
-    "../network",
-    "../security-groups",
-    "../alb-target-group"  # Assuming target group is defined here
-  ]
+# dependencies {
+#   paths = [
+#     "../network",
+#     "../security-groups",
+#     "../alb-target-group"  # Assuming target group is defined here
+#   ]
+# }
+
+dependency "network" {
+  config_path = "../network"
+}
+
+dependency "security-groups" {
+  config_path = "../security-groups"
+}
+
+dependency "alb-target-group" {
+  config_path = "../alb-target-group"
 }
 
 inputs = {

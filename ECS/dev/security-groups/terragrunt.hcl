@@ -6,10 +6,8 @@ terraform {
   source = "../../modules//security-groups"
 }
 
-dependencies {
-  paths = [
-    "../network"
-  ]
+dependency "network" {
+  config_path = "../network"
 }
 
 inputs = {

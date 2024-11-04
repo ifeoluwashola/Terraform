@@ -6,11 +6,15 @@ terraform {
   source = "../../modules//ecs-task"
 }
 
-dependencies {
-  paths = [
-    "../ecs-task-execution-role",
-    "../ecs-task-role"
-  ]
+# dependencies {
+#   paths = [
+#     "../ecs-task-execution-role",
+#     "../ecs-task-role"
+#   ]
+# }
+
+dependency "ecs-task-execution-role" {
+  config_path = "../ecs-task-execution-role"
 }
 
 inputs = {

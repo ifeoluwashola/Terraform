@@ -6,13 +6,33 @@ terraform {
   source = "../../modules//ecs-service"
 }
 
-dependencies {
-  paths = [
-    "../ecs-cluster",
-    "../ecs-task",
-    "../alb-target-group",
-    "../security-groups"
-  ]
+# dependencies {
+#   paths = [
+#     "../ecs-cluster",
+#     "../ecs-task",
+#     "../alb-target-group",
+#     "../security-groups"
+#   ]
+# }
+
+dependency "network" {
+  config_path = "../network"
+}
+
+dependency "security-groups" {
+  config_path = "../security-groups"
+}
+
+dependency "alb-target-group" {
+  config_path = "../alb-target-group"
+}
+
+dependency "ecs-task" {
+  config_path = "../ecs-task"
+}
+
+dependency "ecs-cluster" {
+  config_path = "../ecs-cluster"
 }
 
 inputs = {

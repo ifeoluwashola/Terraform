@@ -6,10 +6,14 @@ terraform {
   source = "../../modules//alb-target-group"
 }
 
-dependencies {
-  paths = [
-    "../network"  # Assuming the VPC ID is output here
-  ]
+# dependencies {
+#   paths = [
+#     "../network"  # Assuming the VPC ID is output here
+#   ]
+# }
+
+dependency "network" {
+  config_path = "../network"
 }
 
 inputs = {
