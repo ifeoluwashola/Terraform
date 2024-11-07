@@ -96,5 +96,11 @@ pipeline:
           runtime: 
             type: Cloud
             spec: {}
-
+  properties:
+    ci:
+      codebase:
+        connectorRef: account.Git_connector
+        repoName: ifeoluwashola/Terraform.git
+        build: <+input>
+        sparseCheckout: []
 
