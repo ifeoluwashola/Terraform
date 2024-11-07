@@ -1,90 +1,10 @@
-# name: Terragrunt Deployment
-
-# on:
-#   push:
-#   workflow_dispatch:
-#     inputs:
-#       action:
-#         description: 'Choose action to run: apply or destroy'
-#         required: true
-#         default: 'apply'
-#         type: choice
-#         options:
-#           - apply
-#           - destroy
-
-# jobs:
-#   terragrunt:
-#     runs-on: ubuntu-latest
-#     env:
-#       AWS_REGION: us-east-1
-#       TERRAGRUNT_TFPATH: /usr/local/bin/terraform
-
-#     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v4
-
-#       - name: Setup Terraform
-#         uses: hashicorp/setup-terraform@v3
-#         with:
-#           terraform_version: 1.8.2
-
-#       - name: Install Terragrunt
-#         run: |
-#           wget https://github.com/gruntwork-io/terragrunt/releases/download/v0.48.4/terragrunt_linux_amd64
-#           chmod +x terragrunt_linux_amd64
-#           sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
-
-#       - name: Configure AWS Credentials
-#         uses: aws-actions/configure-aws-credentials@v4
-#         with:
-#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#           aws-region: ${{ env.AWS_REGION }}
-
-#       - name: Initialize Terragrunt
-#         run: terragrunt run-all init --terragrunt-source-update
-#         working-directory: ./ECS/dev
-
-#       - name: Terragrunt Validate
-#         run: terragrunt run-all validate
-#         working-directory: ./ECS/dev
-
-#       - name: Terragrunt Plan
-#         run: terragrunt run-all plan
-#         working-directory: ./ECS/dev
-
-#       - name: Terragrunt Apply
-#         env:
-#           TERRAGRUNT_NON_INTERACTIVE: true
-#           TG_AUTO_APPROVE: true
-#         run: terragrunt run-all apply -auto-approve -input=false
-#         working-directory: ./ECS/dev
-
-#       # - name: Run Terragrunt Command
-#       #   env:
-#       #     TG_AUTO_APPROVE: "true"  # To auto-confirm apply and destroy actions in CI/CD
-#       #   run: |
-#       #     ACTION=${{ github.event.inputs.action }}
-#       #     if [ "$ACTION" == "apply" ]; then
-#       #       TERRAGRUNT_NON_INTERACTIVE=true terragrunt run-all apply -auto-approve
-#       #     elif [ "$ACTION" == "destroy" ]; then
-#       #       TERRAGRUNT_NON_INTERACTIVE=true terragrunt run-all destroy -auto-approve
-#       #     else
-#       #       echo "Invalid action specified. Use 'apply' or 'destroy'."
-#       #       exit 1
-#       #     fi
-#       #   working-directory: ./ECS/dev
-
-
-
 name: AWS Infrastructure Deployment
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "development" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "development" ]
 
 jobs:
 
@@ -118,15 +38,24 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: '^1.13.1'
+
+    - name: Initialize Terragrunt
+      run: terragrunt run-all init --terragrunt-source-update
+      working-directory: ./ECS/dev
+
+    - name: Terragrunt Validate
+      run: terragrunt run-all validate
+      working-directory: ./ECS/dev
+
+    - name: Terragrunt Plan
+      run: terragrunt run-all plan
+      working-directory: ./ECS/dev
       
-    - name: Terragrunt Run-all Apply
+    - name: Terragrunt Apply
+      if: (github.ref_name == 'main' || github.ref_name == 'development') && (github.event.pull_request.merged == true || github.event_name == 'push')
       run: |
         terragrunt run-all apply --terragrunt-non-interactive
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       working-directory: ./ECS/dev
-        
-    - name: Terragrunt Output
-      run: |
-        terragrunt run-all output
