@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "../../modules/alb-target-group//"
+  source = "../../modules//alb-target-group"
 }
 
 dependency "network" {

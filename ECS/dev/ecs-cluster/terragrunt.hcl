@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "../../modules/ecs-cluster//"
+  source = "../../modules//ecs-cluster"
 }
 
 inputs = {

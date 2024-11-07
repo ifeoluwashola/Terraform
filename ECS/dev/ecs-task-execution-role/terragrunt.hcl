@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "../../modules/ecs-task-execution-role//"
+  source = "../../modules//ecs-task-execution-role"
 }
 
 inputs = {
