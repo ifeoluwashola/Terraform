@@ -36,23 +36,6 @@ provider "docker" {}
 EOF
 }
 
-# Configure backend for remote state storage in S3
-# generate "backend" {
-#   path      = "backend.tf"
-#   if_exists = "overwrite_terragrunt"
-#   contents = <<EOF
-# terraform {
-#   backend "s3" {
-#     bucket         = "ecs-tf-bucket-us"
-#     key            = "${path_relative_to_include()}/terraform.tfstate"
-#     region         = "us-east-1"
-#     encrypt        = true
-#     dynamodb_table = "ecs-tf.state-lock"
-#   }
-# }
-# EOF
-# }
-
 remote_state {
   backend = "s3"
   generate = {
@@ -65,7 +48,6 @@ remote_state {
     encrypt        = true
     dynamodb_table = "ecs-tf.state-lock"
     key            = "${path_relative_to_include()}/terraform.tfstate"
-    # Note: `key` is not specified here because it's set at the environment level
   }
 }
 
