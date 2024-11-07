@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "../../modules//ecs-task-execution-role"
+  source = "../../modules/ecs-task-execution-role"
 }
 
 # dependencies {
@@ -12,5 +12,5 @@ terraform {
 
 inputs = {
   role_name = "ecs-execution-role"
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"  # Common policy for ECS task execution
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }

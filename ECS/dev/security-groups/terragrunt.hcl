@@ -3,14 +3,21 @@ include "root" {
 }
 
 terraform {
-  source = "../../modules//security-groups"
+  source = "../../modules/security-groups"
 }
 
 dependency "network" {
   config_path = "../network"
 }
 
+# dependencies {
+#   paths = [
+#     "../network"
+#   ]
+# }
+
 inputs = {
   lb_sg_name        = "ecs-lb-sg"
   ecs_tasks_sg_name = "ecs-tasks-sg"
+  vpc_id = dependency.network.outputs.vpc_id
 }

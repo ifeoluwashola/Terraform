@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "../../modules//ecs-cluster"
+  source = "../../modules/ecs-cluster"
 }
 
 # dependencies {
@@ -13,5 +13,5 @@ terraform {
 # }
 
 inputs = {
-  ecs_cluster_name = "ecs-cluster"
+  cluster_name = "ecs-cluster"
 }

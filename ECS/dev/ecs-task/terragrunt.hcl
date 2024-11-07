@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "../../modules//ecs-task"
+  source = "../../modules/ecs-task"
 }
 
 # dependencies {
