@@ -10,12 +10,6 @@ dependency "network" {
   config_path = "../network"
 }
 
-# dependencies {
-#   paths = [
-#     "../network"
-#   ]
-# }
-
 inputs = {
   lb_sg_name        = "ecs-lb-sg"
   ecs_tasks_sg_name = "ecs-tasks-sg"

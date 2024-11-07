@@ -38,6 +38,7 @@ module "ecs_task_definition" {
   memory            = var.task_memory
   image             = var.task_image
   container_port    = var.container_port
+  container_name    =  var.container_name
 }
 
 module "ecs_service" {

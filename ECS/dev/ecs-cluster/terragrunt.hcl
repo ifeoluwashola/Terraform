@@ -6,12 +6,6 @@ terraform {
   source = "../../modules/ecs-cluster"
 }
 
-# dependencies {
-#   paths = [
-#     "../network"
-#   ]
-# }
-
 inputs = {
   cluster_name = "ecs-cluster"
 }

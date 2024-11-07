@@ -6,10 +6,6 @@ terraform {
   source = "../../modules/ecs-task-role"
 }
 
-# dependencies {
-#   paths = []
-# }
-
 inputs = {
   role_name = "ecsTaskRole"
 }

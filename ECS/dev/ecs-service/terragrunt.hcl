@@ -6,16 +6,6 @@ terraform {
   source = "../../modules/ecs-service"
 }
 
-# dependencies {
-#   paths = [
-#     "../ecs-cluster",
-#     "../ecs-task",
-#     "../alb-target-group",
-#     "../security-groups",
-#     "../network"
-#   ]
-# }
-
 dependency "network" {
   config_path = "../network"
 }
