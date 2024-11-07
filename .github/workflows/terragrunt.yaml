@@ -26,7 +26,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.5.6  # Use the Terraform version compatible with your modules
+          terraform_version: 1.8.2  # Use the Terraform version compatible with your modules
 
       - name: Install Terragrunt
         run: |
@@ -51,9 +51,9 @@ jobs:
         run: |
           ACTION=${{ github.event.inputs.action }}
           if [ "$ACTION" == "apply" ]; then
-            terragrunt run-all apply -auto-approve
+            TERRAGRUNT_NON_INTERACTIVE=true terragrunt run-all apply -auto-approve
           elif [ "$ACTION" == "destroy" ]; then
-            terragrunt run-all destroy -auto-approve
+            TERRAGRUNT_NON_INTERACTIVE=true terragrunt run-all destroy -auto-approve
           else
             echo "Invalid action specified. Use 'apply' or 'destroy'."
             exit 1
