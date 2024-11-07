@@ -90,6 +90,8 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    env: 
+      TERRAGRUNT_TFPATH: /usr/local/bin/terraform
     
     steps:
     - uses: actions/checkout@v4
@@ -101,6 +103,17 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
         
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.8.2
+
+    - name: Install Terragrunt
+      run: |
+        wget https://github.com/gruntwork-io/terragrunt/releases/download/v0.48.4/terragrunt_linux_amd64
+        chmod +x terragrunt_linux_amd64
+        sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+
     - name: Setup Terragrunt
       uses: actions/setup-go@v5
       with:
