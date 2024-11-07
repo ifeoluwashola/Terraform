@@ -1,6 +1,7 @@
 name: Terragrunt Deployment
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       action:
@@ -45,17 +46,29 @@ jobs:
         run: terragrunt run-all init --terragrunt-source-update
         working-directory: ./ECS/dev
 
-      - name: Run Terragrunt Command
-        env:
-          TG_AUTO_APPROVE: "true"  # To auto-confirm apply and destroy actions in CI/CD
-        run: |
-          ACTION=${{ github.event.inputs.action }}
-          if [ "$ACTION" == "apply" ]; then
-            TERRAGRUNT_NON_INTERACTIVE=true terragrunt run-all apply -auto-approve
-          elif [ "$ACTION" == "destroy" ]; then
-            TERRAGRUNT_NON_INTERACTIVE=true terragrunt run-all destroy -auto-approve
-          else
-            echo "Invalid action specified. Use 'apply' or 'destroy'."
-            exit 1
-          fi
+      - name: Terragrunt Validate
+        run: terragrunt run-all validate
         working-directory: ./ECS/dev
+
+      - name: Terragrunt Plan
+        run: terragrunt run-all plan
+        working-directory: ./ECS/dev
+
+      - name: Terragrunt Apply
+        run: TERRAGRUNT_NON_INTERACTIVE=true terragrunt run-all apply -auto-approve
+        working-directory: ./ECS/dev
+
+      # - name: Run Terragrunt Command
+      #   env:
+      #     TG_AUTO_APPROVE: "true"  # To auto-confirm apply and destroy actions in CI/CD
+      #   run: |
+      #     ACTION=${{ github.event.inputs.action }}
+      #     if [ "$ACTION" == "apply" ]; then
+      #       TERRAGRUNT_NON_INTERACTIVE=true terragrunt run-all apply -auto-approve
+      #     elif [ "$ACTION" == "destroy" ]; then
+      #       TERRAGRUNT_NON_INTERACTIVE=true terragrunt run-all destroy -auto-approve
+      #     else
+      #       echo "Invalid action specified. Use 'apply' or 'destroy'."
+      #       exit 1
+      #     fi
+      #   working-directory: ./ECS/dev
