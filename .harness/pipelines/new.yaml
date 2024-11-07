@@ -1,0 +1,157 @@
+# pipeline:
+#   name: Build tokenmetrics-3.0
+#   identifier: Build_token_metrics_tokenmetrics_3_0_1729816692879
+#   projectIdentifier: tokenmetrics30
+#   orgIdentifier: default
+#   stages:
+#     - stage:
+#         name: Build and Test
+#         identifier: BuildAndTest
+#         type: CI
+#         spec:
+#           cloneCodebase: true
+#           execution:
+#             steps:
+#               - step:
+#                   name: Set up Node.js
+#                   identifier: SetupNode
+#                   type: Plugin
+#                   spec:
+#                     uses: actions/setup-node@v4
+#                     with:
+#                       node-version: 20.x
+#               - step:
+#                   name: Install Dependencies
+#                   identifier: InstallDependencies
+#                   type: Run
+#                   spec:
+#                     shell: Bash
+#                     command: |
+#                       npm ci
+#                       npm run lint
+#                       npm run jest -- --coverage
+#               - step:
+#                   name: Check Coverage
+#                   identifier: CheckCoverage
+#                   type: Run
+#                   spec:
+#                     command: |
+#                       if [ -f coverage/lcov-report/index.html ]; then
+#                         echo "coverage_report_exists=true" >> $GITHUB_ENV
+#                       else
+#                         echo "coverage_report_exists=false" >> $GITHUB_ENV
+#                       fi
+#           platform:
+#             os: Linux
+#             arch: Amd64
+#           runtime:
+#             type: Cloud
+#             spec: {}
+#         description: ""
+#     - stage:
+#         name: Security Scan
+#         identifier: SecurityScan
+#         type: CI
+#         spec:
+#           execution:
+#             steps:
+#               - step:
+#                   name: Run Snyk Security Scan
+#                   identifier: SnykScan
+#                   type: Plugin
+#                   spec:
+#                     uses: snyk/actions/node@master
+#                     env:
+#                       SNYK_TOKEN: <+secrets.getValue("SNYK_TOKEN")>
+#                     with:
+#                       args: "--severity-threshold=high"
+#           platform:
+#             os: Linux
+#             arch: Amd64
+#           runtime:
+#             type: Cloud
+#             spec: {}
+#     - stage:
+#         name: Write Environment Files
+#         identifier: WriteEnvFiles
+#         type: CI
+#         spec:
+#           execution:
+#             steps:
+#               - step:
+#                   name: Write Environment from Secrets
+#                   identifier: WriteEnvFromSecrets
+#                   type: Run
+#                   spec:
+#                     shell: Bash
+#                     command: |
+#                       echo "${{ secrets.TM_ENV_DEV }}" > .env
+#           platform:
+#             os: Linux
+#             arch: Amd64
+#           runtime:
+#             type: Cloud
+#             spec: {}
+#     - stage:
+#         name: Build and Push Docker Image
+#         identifier: BuildAndPushDocker
+#         type: CI
+#         spec:
+#           execution:
+#             steps:
+#               - step:
+#                   name: Set up Docker Buildx
+#                   identifier: SetupDockerBuildx
+#                   type: Plugin
+#                   spec:
+#                     uses: docker/setup-buildx-action@v3
+#               - step:
+#                   name: Build and Push Image
+#                   identifier: BuildPushImage
+#                   type: Plugin
+#                   spec:
+#                     uses: docker/build-push-action@v6
+#                     with:
+#                       context: .
+#                       file: Dockerfile
+#                       push: true
+#                       tags: us-central1-docker.pkg.dev/tmgalaxy/tm-de-artifact/tm-front:${{ env.TAG }}
+#                       github-token: <+secrets.getValue("GITHUB_TOKEN")>
+#                     env:
+#                       DOCKER_BUILDKIT: 1
+#           platform:
+#             os: Linux
+#             arch: Amd64
+#           runtime:
+#             type: Cloud
+#             spec: {}
+#     - stage:
+#         name: Release Log
+#         identifier: ReleaseLog
+#         type: CI
+#         spec:
+#           execution:
+#             steps:
+#               - step:
+#                   name: Generate Release Log
+#                   identifier: ReleaseLog
+#                   type: Plugin
+#                   spec:
+#                     uses: release-drafter/release-drafter@v6
+#                     with:
+#                       config-name: release-log.yaml
+#                     env:
+#                       GITHUB_TOKEN: <+secrets.getValue("ARGOCD_PAT")>
+#           platform:
+#             os: Linux
+#             arch: Amd64
+#           runtime:
+#             type: Cloud
+#             spec: {}
+#   properties:
+#     ci:
+#       codebase:
+#         connectorRef: account.Github
+#         repoName: token-metrics/tokenmetrics-3.0.git
+#         build: <+input>
+#         sparseCheckout: []

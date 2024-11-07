@@ -1,0 +1,100 @@
+pipeline:
+  name: pipeline
+  identifier: pipeline
+  projectIdentifier: ECS
+  orgIdentifier: default
+  tags: {}
+  stages:
+    - stage:
+        name: Deploy
+        identifier: Deploy
+        type: CI
+        spec:
+          cloneCodebase: true
+          execution:
+            steps:
+              - step:
+                  name: Configure AWS credentials
+                  identifier: AWS
+                  type: Plugin
+                  spec:
+                    uses: aws-actions/configure-aws-credentials@v4
+                    with:
+                      aws-access-key-id: <+secrets.getValue("AWS_ACCESS_KEY_ID")
+                      aws-secret-access-key: <+secrets.getValue("AWS_SECRET_ACCESS_KEY")
+                      aws-region: us-east-1
+
+              - step:
+                  name: Setup Terraform
+                  identifier: SetupTerraform
+                  type: Plugin
+                  spec:
+                    uses: hashicorp/setup-terraform@v3
+                    with:
+                      terraform_version: 1.8.2
+
+              - step:
+                  name: Install Terragrunt
+                  identifier: InstallTerragrunt
+                  type: Run
+                  spec:
+                    commands: |
+                      wget https://github.com/gruntwork-io/terragrunt/releases/download/v0.48.4/terragrunt_linux_amd64
+                      chmod +x terragrunt_linux_amd64
+                      sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+
+              - step:
+                  name: Setup Terragrunt
+                  identifier: SetupTerragrunt
+                  type: Plugin
+                  spec:
+                    uses: actions/setup-go@v5
+                    with:
+                      go-version: '^1.13.1'
+
+              - step:
+                  name: Terragrunt Init
+                  identifier: Init
+                  type: Run
+                  spec:
+                    commands: |
+                      cd ./ECS/dev
+                      terragrunt run-all init --terragrunt-source-update
+
+              - step:
+                  name: Terragrunt Validate
+                  identifier: Validate
+                  type: Run
+                  spec:
+                    commands: |
+                      cd ./ECS/dev
+                      terragrunt run-all validate
+
+              - step:
+                  name: Terragrunt Plan
+                  identifier: Plan
+                  type: Run
+                  spec:
+                    commands: |
+                      cd ./ECS/dev
+                      terragrunt run-all plan
+
+              - step:
+                  name: Terragrunt apply
+                  identifier: apply
+                  type: Run
+                  spec:
+                    commands: |
+                      cd ./ECS/dev
+                      terragrunt run-all apply --terragrunt-non-interactive
+                    env: 
+                      AWS_ACCESS_KEY_ID: <+secrets.getValue("AWS_ACCESS_KEY_ID")
+                      AWS_SECRET_ACCESS_KEY: <+secrets.getValue("AWS_SECRET_ACCESS_KEY")
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime: 
+            type: Cloud
+            spec: {}
+
+
