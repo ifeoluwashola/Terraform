@@ -55,7 +55,10 @@ jobs:
         working-directory: ./ECS/dev
 
       - name: Terragrunt Apply
-        run: TERRAGRUNT_NON_INTERACTIVE=true terragrunt run-all apply -auto-approve -input=false
+        env:
+          TERRAGRUNT_NON_INTERACTIVE: "true"
+          TERRAGRUNT_LOG_LEVEL: "debug"
+        run: terragrunt run-all apply -auto-approve -input=false
         working-directory: ./ECS/dev
 
       # - name: Run Terragrunt Command
