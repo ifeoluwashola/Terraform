@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "../../modules/ecs-service"
+  source = "../../modules/ecs-service//"
 }
 
 dependency "network" {

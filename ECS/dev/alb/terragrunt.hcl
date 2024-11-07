@@ -3,7 +3,7 @@ include "root" {
 }
 
 terraform {
-  source = "../../modules/alb"
+  source = "../../modules/alb//"
 }
 
 dependency "network" {
@@ -22,7 +22,7 @@ inputs = {
   lb_name              = "alb"
   listener_port     = 80
   listener_protocol = "HTTP"
-  subnets               = dependency.network.outputs.public_subnet_ids             # From network module
-  security_groups       = [ dependency.security-groups.outputs.lb_sg_id ]     # From security-groups module
+  subnets               = dependency.network.outputs.public_subnet_ids             
+  security_groups       = [ dependency.security-groups.outputs.lb_sg_id ]   
   target_group_arn      = dependency.alb-target-group.outputs.target_group_arn
 }
