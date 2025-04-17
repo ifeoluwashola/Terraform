@@ -14,3 +14,4 @@ secret_values = {
   DB_HOST           = "db-instance-name.rds.amazonaws.com"
   ALLOWED_HOSTS     = "localhost,127.0.0.1"
 }
+secret_key = "random"
